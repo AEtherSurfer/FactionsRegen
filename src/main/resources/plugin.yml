@@ -1,0 +1,6 @@
+name: ${name}
+version: v${version}-b${buildNumber}
+main: ${pluginMainClass}
+authors: [AEtherSurfer]
+depend: [Factions]
+softdepend: [ScalaBukkit]

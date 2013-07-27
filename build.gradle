@@ -1,0 +1,73 @@
+apply plugin: 'scala'
+apply plugin: 'eclipse'
+apply plugin: 'idea'
+
+eclipse {
+	classpath {
+		downloadSources=true
+	}
+}
+
+ext {
+	scalaVersion = '2.10.2'
+	buildNumber = "DEV"
+}
+
+group = "com.aethercraft"
+version = "0.0.1-SNAPSHOT"
+
+sourceCompatibility = 1.7
+
+repositories {
+	mavenLocal()
+	mavenCentral()
+	mavenRepo name:'scala-releases', url:'http://scala-tools.org/repo-releases/'
+	mavenRepo name:'scala-snapshots', url:'http://scala-tools.org/repo-snapshots/'
+	maven {
+		url "http://repo.bukkit.org/content/groups/public"
+	}
+}
+
+configurations {
+	scalaCompiler
+	scalaLibrary
+}
+
+tasks.withType(ScalaCompile) {
+	scalaCompileOptions.useCompileDaemon = false
+	scalaCompileOptions.useAnt = false
+	scalaCompileOptions.additionalParameters = ['-target:jvm-1.7']
+}
+
+dependencies {
+	scalaCompiler "org.scala-lang:scala-compiler:$scalaVersion"
+	scalaLibrary "org.scala-lang:scala-library:$scalaVersion"
+
+	compile "org.scala-lang:scala-library:$scalaVersion"
+
+    compile 'javax.servlet:servlet-api:2.4' // needed for scala based bukkit plugins
+
+	compile 'org.bukkit:bukkit:1.6.2-R0.1-SNAPSHOT'
+	compile('com.massivecraft:Factions:2.0.3AES-SNAPSHOT') {
+		exclude module: 'ProtocolLib'
+		exclude module: 'Privileges'
+		exclude module: 'craftconomy3'
+        exclude module: 'SDFEconomy'
+        exclude module: 'Vault'
+	}
+}
+
+processResources {
+	filter {
+		line ->
+		line
+		.replace('${name}', project.name)
+		.replace('${version}', project.version)
+		.replace('${buildNumber}', project.ext.buildNumber)
+		.replace('${pluginMainClass}', "${project.group}.${project.name.toLowerCase()}.Plugin")
+	}
+}
+
+task wrapper(type: Wrapper) {
+	gradleVersion = '1.6'
+}
